@@ -1,12 +1,24 @@
 <template>
     <v-container>
-        <v-row>
+        <v-row class="text-center">
             <template v-if="!success">
-                <h1>
-                    Uuups seems like there is no result
-                </h1>
+                <v-col cols="12">
+                    <h1>
+                        Uuups seems like there is no result
+                    </h1>
+                </v-col>
             </template>
             <template v-else-if="!loading">
+                <v-col cols="6">
+                    <h1>
+                        You searched for <em>{{ searchTerm }}</em>
+                    </h1>
+                </v-col>
+                <v-col cols="6">
+                    <v-btn @click="reset">
+                        Clear Search
+                    </v-btn>
+                </v-col>
                 <card v-for="movie in movies" v-bind:key="movie.title" v-bind:movie="movie" />
             </template>
             <template v-else class="py-8">
@@ -28,7 +40,7 @@ import Card from "./DetailCard";
 export default {
     name: "HelloWorld",
     components: { Card },
-    props: ["searchTerm"],
+    props: ["searchTerm", "reset"],
     data: () => ({
         success: true,
         movies: [],
