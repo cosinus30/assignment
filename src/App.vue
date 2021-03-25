@@ -3,6 +3,7 @@
         <v-app-bar app dark>
             <div class="d-flex align-center">
                 <v-img
+                    @click="resetState"
                     alt="Pitcher Logo"
                     class="shrink mr-2"
                     contain
@@ -11,32 +12,33 @@
                     width="40"
                 />
             </div>
-
-            <div style="position: relative;" class="mx-auto">
-                <input
-                    v-model="search"
-                    type="text"
-                    placeholder="Search..."
-                    class=" red lighten-5 rounded-pill px-4 py-2"
-                />
-                <v-icon style="position: absolute; right: 8px; top: 8px; color: black;">
-                    mdi-magnify
-                </v-icon>
-            </div>
+            <v-autocomplete
+                class="mt-4 mx-8"
+                v-model="model"
+                @keyup="filterResults"
+                :items="results"
+                :search-input.sync="search"
+                item-text="Movie Title"
+                item-value="Movie Title2"
+                label="Movies&Stuff"
+                placeholder="Start typing to Search"
+                prepend-icon="mdi-magnify"
+                return-object
+            ></v-autocomplete>
         </v-app-bar>
 
         <v-main>
-            <HelloWorld v-if="touched" :searchTerm="finalSearchTerm" />
+            <HelloWorld v-if="touched" :searchTerm="finalSearchTerm" :reset="resetState" />
             <template v-else>
-                    <div style="position: relative; height:1080px;">
-                        <v-img
-                            src="https://cdn.dribbble.com/users/2187949/screenshots/7780753/media/185ccbcc0d1fbec028e867136e5096a3.jpg"
-                        >
-                        </v-img>
-                        <h1 style="position: absolute; top: 128px; left: 128px;">
-                            Why don't you start typing already?
-                        </h1>
-                    </div>
+                <div style="position: relative;">
+                    <v-img
+                        src="https://cdn.dribbble.com/users/2187949/screenshots/7780753/media/185ccbcc0d1fbec028e867136e5096a3.jpg"
+                    >
+                    </v-img>
+                    <h1 style="position: absolute; top: 128px; left: 128px;">
+                        Why don't you start typing already?
+                    </h1>
+                </div>
             </template>
         </v-main>
     </v-app>
@@ -44,6 +46,7 @@
 
 <script>
 import HelloWorld from "./components/HelloWorld";
+import { moviesOfTwentyTwenty } from "./constants/movies";
 
 export default {
     name: "App",
@@ -53,10 +56,12 @@ export default {
     },
 
     data: () => ({
-        search: "",
-        touched: false,
         finalSearchTerm: "",
         timer: {},
+        results: [],
+        model: null,
+        search: null,
+        touched: false,
     }),
 
     watch: {
@@ -66,8 +71,34 @@ export default {
                 this.finalSearchTerm = this.search;
             }, 1000);
 
-            if (this.search === "") this.touched = false;
-            else this.touched = true;
+            if (this.search === "") {
+                this.touched = false;
+            } else if (this.search == null) {
+                this.search = this.finalSearchTerm;
+                this.touched = true;
+            } else {
+                this.touched = true;
+            }
+        },
+    },
+
+    methods: {
+        filterResults() {
+            if (this.search != "")
+                this.results = moviesOfTwentyTwenty
+                    .filter((item) => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1)
+                    .splice(0, 5);
+            else {
+                this.results = [];
+            }
+        },
+        resetState(){
+            this.finalSearchTerm= "";
+            this.timer= {};
+            this.results= [];
+            this.model= null;
+            this.search= null;
+            this.touched= false;
         },
     },
 };
