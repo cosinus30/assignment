@@ -23,9 +23,9 @@
 
             <div style="position: relative;" class="mx-auto">
                 <input
-                    v-model="searchTerm"
+                    v-model="search"
                     type="text"
-                    placeholder="Search..."
+                    placeholder="Type..."
                     class=" red lighten-5 rounded-pill px-4 py-2"
                 />
                 <v-icon style="position: absolute; right: 8px; top: 8px; color: black;">
@@ -35,7 +35,7 @@
         </v-app-bar>
 
         <v-main>
-            <HelloWorld />
+            <HelloWorld :searchTerm="finalSearchTerm"/>
         </v-main>
     </v-app>
 </template>
@@ -51,7 +51,18 @@ export default {
     },
 
     data: () => ({
-        searchTerm: "",
+        search: "",
+        finalSearchTerm: "",
+        timer: {}
     }),
+
+    watch: {
+      search: function() {
+          clearTimeout(this.timer);
+          this.timer = setTimeout(() => {
+            this.finalSearchTerm = this.search;
+          }, 1000)
+      },
+    },
 };
 </script>
