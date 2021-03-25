@@ -59,11 +59,20 @@ export default {
     }),
     methods: {
         getAllDetails: function() {
-            this.$http.get(`http://www.omdbapi.com/?t=${this.movie.Title}&apikey=3e06b3ae`).then(function(response) {
-                this.details = { ...response.body };
-                this.genres = this.details.Genre.split(",");
-                console.log(this.details);
-            });
+            const cachedMovies = this.$root.$data.getMovie(this.movie.Title);
+            if (cachedMovies.length > 0) {
+                const targetMovie = cachedMovies[0];
+                this.details = { ...targetMovie };
+                this.genres = targetMovie.Genre.split(",");
+            } else {
+                this.$http
+                    .get(`http://www.omdbapi.com/?t=${this.movie.Title}&apikey=3e06b3ae`)
+                    .then(function(response) {
+                        this.details = { ...response.body };
+                        this.genres = this.details.Genre.split(",");
+                        this.$root.$data.addNewMovie(response.body)
+                    });
+            }
         },
     },
 };

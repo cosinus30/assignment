@@ -20,7 +20,7 @@
                 :search-input.sync="search"
                 item-text="Movie Title"
                 item-value="Movie Title2"
-                label="Movies&Stuff"
+                label="Search and enter..."
                 placeholder="Start typing to Search"
                 prepend-icon="mdi-magnify"
                 return-object

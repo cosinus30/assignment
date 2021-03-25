@@ -1,13 +1,26 @@
-import Vue from 'vue'
-import App from './App.vue'
-import vuetify from './plugins/vuetify';
-import VueResource from 'vue-resource'
+import Vue from "vue";
+import App from "./App.vue";
+import vuetify from "./plugins/vuetify";
+import VueResource from "vue-resource";
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 Vue.use(VueResource);
 
+var store = {
+    state: {
+        movieList: [],
+    },
+    addNewMovie(newValue) {
+        this.state.movieList.push(newValue);
+    },
+    getMovie(title) {
+        return this.state.movieList.filter((el) => el.Title == title);
+    },
+};
+
 new Vue({
-  vuetify,
-  render: h => h(App)
-}).$mount('#app')
+    vuetify,
+    data: store,
+    render: (h) => h(App),
+}).$mount("#app");
