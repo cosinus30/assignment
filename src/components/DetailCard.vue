@@ -1,4 +1,5 @@
 <template>
+    
     <v-card class="mx-auto my-12" max-width="374">
         <v-img height="250" :src="movie.Poster"></v-img>
         <v-card-title class="py-2">
@@ -8,8 +9,8 @@
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" persistent max-width="600px">
                 <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon color="primary" dark @click="getAllDetails()" v-bind="attrs" v-on="on">
-                        <v-icon>{{ "mdi-chevron-down" }}</v-icon>
+                    <v-btn color="dark" text @click="getAllDetails()" v-bind="attrs" v-on="on">
+                        More Info <v-icon>{{ "mdi-chevron-down" }}</v-icon>
                     </v-btn>
                 </template>
                 <v-card>
