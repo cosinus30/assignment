@@ -49,31 +49,41 @@
 </template>
 
 <script>
+import { ref, getCurrentInstance } from "@vue/composition-api";
+
 export default {
     name: "DetailCard",
     props: ["movie"],
-    data: () => ({
-        dialog: false,
-        details: {},
-        genres: [],
-    }),
-    methods: {
-        getAllDetails: function() {
-            const cachedMovies = this.$root.$data.getMovie(this.movie.Title);
+
+    setup(props) {
+        console.log(getCurrentInstance())
+        const root = getCurrentInstance().root;
+        const dialog = ref(false);
+        const details = ref({});
+        const genres = ref([]);
+
+        function getAllDetails() {
+            const cachedMovies = root.data.getMovie(props.movie.Title);
             if (cachedMovies.length > 0) {
                 const targetMovie = cachedMovies[0];
-                this.details = { ...targetMovie };
-                this.genres = targetMovie.Genre.split(",");
+                details.value = { ...targetMovie };
+                genres.value = targetMovie.Genre.split(",");
             } else {
                 this.$http
                     .get(`http://www.omdbapi.com/?t=${this.movie.Title}&apikey=3e06b3ae`)
                     .then(function(response) {
-                        this.details = { ...response.body };
-                        this.genres = this.details.Genre.split(",");
-                        this.$root.$data.addNewMovie(response.body)
+                        details.value = { ...response.body };
+                        genres.value = this.details.Genre.split(",");
+                        root.data.addNewMovie(response.body);
                     });
             }
-        },
+        }
+        return {
+            dialog,
+            details,
+            genres,
+            getAllDetails,
+        };
     },
 };
 </script>
