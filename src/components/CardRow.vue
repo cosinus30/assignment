@@ -36,30 +36,42 @@
 
 <script>
 import Card from "./DetailCard";
+import { ref, watch } from "@vue/composition-api";
+import axios from "axios";
 
 export default {
-    name: "HelloWorld",
+    name: "CardRow",
     components: { Card },
     props: ["searchTerm", "reset"],
-    data: () => ({
-        success: true,
-        movies: [],
-        loading: false,
-    }),
 
-    watch: {
-        searchTerm: function() {
-            this.loading = true;
-            this.$http
-                .get(`http://www.omdbapi.com/?s=${this.searchTerm}&apikey=3e06b3ae&y=2020&plot=full`)
-                .then(function(response) {
-                    if (response.body.Response === "True") {
-                        this.movies = [...response.body.Search];
-                        this.success = true;
-                    } else this.success = false;
-                    this.loading = false;
-                });
-        },
+    setup(props) {
+        const success = ref(false);
+        const movies = ref([]);
+        const loading = ref(false);
+
+        watch(
+            () => props.searchTerm,
+            function() {
+                console.log("I worked");
+                loading.value = true;
+                axios
+                    .get(`http://www.omdbapi.com/?s=${props.searchTerm}&apikey=3e06b3ae&y=2020&plot=full`)
+                    .then(function(response) {
+                        const data = response.data;
+                        if (data.Response === "True") {
+                            movies.value = [...data.Search];
+                            success.value = true;
+                        } else success.value = false;
+                        loading.value = false;
+                    });
+            }
+        );
+
+        return {
+            success,
+            movies,
+            loading,
+        };
     },
 };
 </script>
