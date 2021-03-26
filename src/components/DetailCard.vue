@@ -34,7 +34,23 @@
                         <v-card-title>
                             <span class="headline">{{ movie.Title }}</span>
                         </v-card-title>
-                        <v-card-text>{{ details.Plot }} </v-card-text>
+                        <v-card-text>
+                            <v-row class="mx-1">
+                                {{ details.Plot }}
+                            </v-row>
+                            <v-row justify="space-around" class="mt-8">
+                                <v-tooltip bottom v-for="rating in details.Ratings" :key="rating.Source">
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-avatar color="indigo" size="60" v-bind="attrs" v-on="on">
+                                            <span class="white--text">{{ rating.Value }}</span>
+                                        </v-avatar>
+                                    </template>
+                                    <span>
+                                        {{ rating.Source }}
+                                    </span>
+                                </v-tooltip>
+                            </v-row>
+                        </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn color="blue darken-1" text @click="dialog = false">
@@ -50,13 +66,13 @@
 
 <script>
 import { ref, getCurrentInstance } from "@vue/composition-api";
+import axios from "axios";
 
 export default {
     name: "DetailCard",
     props: ["movie"],
 
     setup(props) {
-        console.log(getCurrentInstance())
         const root = getCurrentInstance().root;
         const dialog = ref(false);
         const details = ref({});
@@ -69,13 +85,12 @@ export default {
                 details.value = { ...targetMovie };
                 genres.value = targetMovie.Genre.split(",");
             } else {
-                this.$http
-                    .get(`http://www.omdbapi.com/?t=${this.movie.Title}&apikey=3e06b3ae`)
-                    .then(function(response) {
-                        details.value = { ...response.body };
-                        genres.value = this.details.Genre.split(",");
-                        root.data.addNewMovie(response.body);
-                    });
+                axios.get(`http://www.omdbapi.com/?t=${this.movie.Title}&apikey=3e06b3ae`).then(function(response) {
+                    console.log(response.data);
+                    details.value = { ...response.data };
+                    genres.value = details.value.Genre.split(",");
+                    root.data.addNewMovie(response.data);
+                });
             }
         }
         return {

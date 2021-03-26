@@ -28,7 +28,7 @@
         </v-app-bar>
 
         <v-main>
-            <HelloWorld v-if="touched" :searchTerm="finalSearchTerm" :reset="resetState" />
+            <CardRow v-if="touched" :searchTerm="finalSearchTerm" :reset="resetState" />
             <template v-else>
                 <div style="position: relative;">
                     <v-img
@@ -46,14 +46,14 @@
 
 <script>
 import { ref, watch } from "@vue/composition-api";
-import HelloWorld from "./components/HelloWorld";
+import CardRow from "./components/CardRow";
 import { moviesOfTwentyTwenty } from "./constants/movies";
 
 export default {
     name: "App",
 
     components: {
-        HelloWorld,
+        CardRow,
     },
 
     setup() {
@@ -72,7 +72,6 @@ export default {
             else {
                 results.value = [];
             }
-            console.log(results)
         }
 
         watch(search, function() {
@@ -108,7 +107,7 @@ export default {
             search,
             touched,
             resetState,
-            filterResults
+            filterResults,
         };
     },
 };
