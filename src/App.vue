@@ -45,6 +45,7 @@
 </template>
 
 <script>
+import { ref, watch } from "@vue/composition-api";
 import HelloWorld from "./components/HelloWorld";
 import { moviesOfTwentyTwenty } from "./constants/movies";
 
@@ -55,51 +56,60 @@ export default {
         HelloWorld,
     },
 
-    data: () => ({
-        finalSearchTerm: "",
-        timer: {},
-        results: [],
-        model: null,
-        search: null,
-        touched: false,
-    }),
+    setup() {
+        const finalSearchTerm = ref("");
+        const timer = ref({});
+        const model = ref("");
+        const search = ref("");
+        const touched = ref(false);
+        let results = ref([]);
 
-    watch: {
-        search: function() {
-            clearTimeout(this.timer);
-            this.timer = setTimeout(() => {
-                this.finalSearchTerm = this.search;
-            }, 1000);
-
-            if (this.search === "") {
-                this.touched = false;
-            } else if (this.search == null) {
-                this.search = this.finalSearchTerm;
-                this.touched = true;
-            } else {
-                this.touched = true;
-            }
-        },
-    },
-
-    methods: {
-        filterResults() {
-            if (this.search != "")
-                this.results = moviesOfTwentyTwenty
-                    .filter((item) => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1)
+        function filterResults() {
+            if (search.value != "")
+                results.value = moviesOfTwentyTwenty
+                    .filter((item) => item.toLowerCase().indexOf(search.value.toLowerCase()) > -1)
                     .splice(0, 5);
             else {
-                this.results = [];
+                results.value = [];
             }
-        },
-        resetState(){
-            this.finalSearchTerm= "";
-            this.timer= {};
-            this.results= [];
-            this.model= null;
-            this.search= null;
-            this.touched= false;
-        },
+            console.log(results)
+        }
+
+        watch(search, function() {
+            clearTimeout(timer);
+            timer.value = setTimeout(() => {
+                finalSearchTerm.value = search.value;
+            }, 1000);
+
+            if (search.value === "") {
+                touched.value = false;
+            } else if (search.value == null) {
+                search.value = finalSearchTerm.value;
+                touched.value = true;
+            } else {
+                touched.value = true;
+            }
+        });
+
+        function resetState() {
+            finalSearchTerm.value = "";
+            timer.value = {};
+            results.value = [];
+            model.value = null;
+            search.value = null;
+            touched.value = false;
+        }
+
+        return {
+            results,
+            finalSearchTerm,
+            timer,
+            model,
+            search,
+            touched,
+            resetState,
+            filterResults
+        };
     },
 };
 </script>
